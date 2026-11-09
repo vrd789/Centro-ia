@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <title>CENTRO IA 1.0</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #101827;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    main { max-width: 700px; margin: auto; }
+    h1 { text-align: center; color: #60a5fa; }
+    .subtitle { text-align: center; color: #aab7ca; }
+    .models {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 25px 0;
+    }
+    .model, .panel {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: 0;
+      border-radius: 9px;
+      padding: 12px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .model button { width: 100%; margin-top: 10px; }
+    .panel { text-align: left; margin-top: 15px; }
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      background: #0f172a;
+      color: white;
+      border: 1px solid #475569;
+    }
+    #status { color: #86efac; }
+    @media(max-width: 480px) {
+      .models { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1> CENTRO IA 1.0 </h1>
+  <p class="subtitle">Tu centro de inteligencia artificial</p>
+
+  <section class="models">
+    <div class="model">
+      <h3>ChatGPT</h3>
+      <button onclick="openAI('https://chatgpt.com')">Abrir</button>
+    </div>
+    <div class="model">
+      <h3>Gemini</h3>
+      <button onclick="openAI('https://gemini.google.com')">Abrir</button>
+    </div>
+    <div class="model">
+      <h3>DeepSeek</h3>
+      <button onclick="openAI('https://chat.deepseek.com')">Abrir</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Panel de coordinación</h2>
+    <p>Escribe la tarea que quieres realizar:</p>
+    <textarea id="task" placeholder="Ejemplo: Investiga cómo crear una aplicación..."></textarea>
+    <button onclick="saveTask()">Guardar tarea</button>
+    <p id="status">Sistema iniciado correctamente.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Memoria local</h2>
+    <p id="memory">Todavía no hay tareas guardadas.</p>
+  </section>
+</main>
+
+<script>
+  function openAI(url) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function saveTask() {
+    const task = document.getElementById("task").value.trim();
+    if (!task) {
+      document.getElementById("status").textContent =
+        "Escribe una tarea primero.";
+      return;
+    }
+
+    try {
+      const tasks = JSON.parse(
+        localStorage.getItem("centroIA_tasks") || "[]"
+      );
+      tasks.push({ text: task, date: new Date().toLocaleString("es-CO") });
+      localStorage.setItem("centroIA_tasks", JSON.stringify(tasks));
+
+      document.getElementById("memory").textContent =
+        tasks.map((item, i) => (i + 1) + ". " + item.text).join(" | ");
+
+      document.getElementById("status").textContent =
+        "Tarea guardada correctamente.";
+      document.getElementById("task").value = "";
+    } catch (error) {
+      document.getElementById("status").textContent =
+        "No se pudo guardar la tarea en este navegador.";
+    }
+  }
+
+  try {
+    const tasks = JSON.parse(
+      localStorage.getItem("centroIA_tasks") || "[]"
+    );
+    if (tasks.length) {
+      document.getElementById("memory").textContent =
+        tasks.map((item, i) => (i + 1) + ". " + item.text).join(" | ");
+    }
+  } catch (error) {
+    document.getElementById("memory").textContent =
+      "Memoria local no disponible.";
+  }
+</script>
+</body>
+</html>
